@@ -122,3 +122,25 @@ body {
     opacity: 0;
   }
 }
+
+/* --- Admin tag markers --- */
+
+.admin-tag {
+  background: none;
+  border: none;
+}
+
+.admin-tag__dot {
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin: 2px;
+  border-radius: 50%;
+  background: #7c3aed;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.admin-tag:hover .admin-tag__dot {
+  background: #a78bfa;
+}
