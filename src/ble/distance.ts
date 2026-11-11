@@ -42,11 +42,13 @@ interface Estimate {
  */
 export class DistanceTracker {
   private estimates = new Map<string, Estimate>()
+  private readonly alpha: number
+  private readonly staleMs: number
 
-  constructor(
-    private readonly alpha = 0.3,
-    private readonly staleMs = 4000,
-  ) {}
+  constructor(alpha = 0.3, staleMs = 4000) {
+    this.alpha = alpha
+    this.staleMs = staleMs
+  }
 
   /** Feed a raw distance sample; returns the new smoothed distance. */
   update(key: string, rawDistanceM: number, now: number = Date.now()): number {
