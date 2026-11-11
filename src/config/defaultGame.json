@@ -1,0 +1,37 @@
+{
+  "tags": [
+    {
+      "id": "demo-bench",
+      "name": "Old Oak Bench",
+      "uuid": "b9407f30-f5f8-466e-aff9-25556b57fe6d",
+      "major": 1,
+      "minor": 1,
+      "lat": 40.7812,
+      "lng": -73.9665,
+      "findRadiusM": 5,
+      "measuredPowerDbm": -59
+    },
+    {
+      "id": "demo-fountain",
+      "name": "Central Fountain",
+      "uuid": "b9407f30-f5f8-466e-aff9-25556b57fe6d",
+      "major": 2,
+      "minor": 1,
+      "lat": 40.782,
+      "lng": -73.9658,
+      "findRadiusM": 5,
+      "measuredPowerDbm": -59
+    },
+    {
+      "id": "demo-gate",
+      "name": "North Gate",
+      "uuid": "b9407f30-f5f8-466e-aff9-25556b57fe6d",
+      "major": 3,
+      "minor": 1,
+      "lat": 40.7835,
+      "lng": -73.9662,
+      "findRadiusM": 5,
+      "measuredPowerDbm": -59
+    }
+  ]
+}
