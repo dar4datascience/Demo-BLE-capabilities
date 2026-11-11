@@ -86,6 +86,35 @@ describe('useGameStore', () => {
     expect(store.tags).toHaveLength(1)
   })
 
+  it('evaluateFound marks a tag after sustained proximity', () => {
+    const store = useGameStore()
+    store.importTags([{ ...TAG, findRadiusM: 5 }])
+    store.ingestIBeacon(BEACON, 3, -60, 1000)
+    store.evaluateFound(1000)
+    expect(store.isFound('tag-a')).toBe(false)
+    store.evaluateFound(3000) // 2000ms dwell reached
+    expect(store.isFound('tag-a')).toBe(true)
+  })
+
+  it('evaluateFound ignores stale detections', () => {
+    const store = useGameStore()
+    store.importTags([{ ...TAG, findRadiusM: 5 }])
+    store.ingestIBeacon(BEACON, 3, -60, 1000)
+    store.evaluateFound(1000)
+    // detection goes stale (>2500ms) before dwell completes
+    store.evaluateFound(4000)
+    expect(store.isFound('tag-a')).toBe(false)
+  })
+
+  it('evaluateFound requires distance within radius', () => {
+    const store = useGameStore()
+    store.importTags([{ ...TAG, findRadiusM: 5 }])
+    store.ingestIBeacon(BEACON, 8, -70, 1000) // outside 5m radius
+    store.evaluateFound(1000)
+    store.evaluateFound(5000)
+    expect(store.isFound('tag-a')).toBe(false)
+  })
+
   it('persists tags and found state to localStorage', async () => {
     const store = useGameStore()
     store.importTags([TAG])
