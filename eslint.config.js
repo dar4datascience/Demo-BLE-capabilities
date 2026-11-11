@@ -26,6 +26,14 @@ export default [
     },
   },
   {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
+    },
+  },
+  {
     files: ['src/**/*.ts', 'src/**/*.vue'],
     languageOptions: {
       globals: globals.browser,
