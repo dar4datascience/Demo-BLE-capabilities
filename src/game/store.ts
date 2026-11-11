@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, reactive, ref, watch } from 'vue'
 import type { IBeaconData } from '../ble/ibean'
 import defaultGame from '../config/defaultGame.json'
+import { FoundTracker, isDetectionFresh, isWithinRadius } from './logic'
 import type { GameMode, LiveDetection, TagConfig, UnknownBeacon } from './types'
 
 const TAGS_KEY = 'tagtrail.tags.v1'
@@ -45,6 +46,7 @@ export const useGameStore = defineStore('game', () => {
   const mode = ref<GameMode>('player')
   const scanning = ref(false)
   const scanError = ref<string | null>(null)
+  const foundTracker = new FoundTracker()
 
   const found = computed(() => tags.value.filter((t) => foundAt.has(t.id)))
   const progress = computed(() => ({ found: found.value.length, total: tags.value.length }))
@@ -111,17 +113,37 @@ export const useGameStore = defineStore('game', () => {
 
   function unmarkFound(tagId: string): void {
     foundAt.delete(tagId)
+    foundTracker.reset(tagId)
   }
 
   /** Clear live detections + unknown beacons (e.g. scan stopped). */
   function clearDetections(): void {
     detections.clear()
     unknownBeacons.clear()
+    foundTracker.reset()
+  }
+
+  /**
+   * Evaluate the found rule for every tag: fresh detection within the tag's
+   * find radius, sustained for the dwell period. Call after each ingest batch
+   * or on an interval while scanning.
+   */
+  function evaluateFound(now = Date.now()): void {
+    for (const tag of tags.value) {
+      if (foundAt.has(tag.id)) continue
+      const d = detections.get(tag.id)
+      const within =
+        d !== undefined &&
+        isDetectionFresh(d.lastSeen, now) &&
+        isWithinRadius(d.distanceM, tag.findRadiusM)
+      if (foundTracker.check(tag.id, within, now)) markFound(tag.id, now)
+    }
   }
 
   /** Reset found progress only — tags and config stay. */
   function resetProgress(): void {
     foundAt.clear()
+    foundTracker.reset()
     saveJson(FOUND_KEY, {})
   }
 
@@ -167,6 +189,7 @@ export const useGameStore = defineStore('game', () => {
     markFound,
     unmarkFound,
     clearDetections,
+    evaluateFound,
     resetProgress,
     resetAll,
     upsertTag,
