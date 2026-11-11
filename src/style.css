@@ -19,3 +19,106 @@ body {
     -apple-system,
     sans-serif;
 }
+
+/* --- Ghost markers (Leaflet divIcon; must be global, not scoped) --- */
+
+.ghost {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+}
+
+.ghost__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.ghost__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: ghost-pulse 1.6s ease-out infinite;
+}
+
+.ghost__dist,
+.ghost__check {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
+  background: rgba(17, 24, 39, 0.85);
+  white-space: nowrap;
+}
+
+.ghost__check {
+  color: #4ade80;
+}
+
+.ghost--green {
+  color: #22c55e;
+}
+.ghost--green .ghost__dot {
+  background: #22c55e;
+}
+
+.ghost--yellow {
+  color: #eab308;
+}
+.ghost--yellow .ghost__dot {
+  background: #eab308;
+}
+
+.ghost--red {
+  color: #ef4444;
+}
+.ghost--red .ghost__dot {
+  background: #ef4444;
+}
+
+.ghost--unknown {
+  color: #9ca3af;
+}
+.ghost--unknown .ghost__dot {
+  background: #9ca3af;
+}
+
+/* Found tags: calm solid style, no pulse */
+.ghost--found {
+  color: #38bdf8;
+}
+.ghost--found .ghost__dot {
+  background: #38bdf8;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+}
+.ghost--found .ghost__ring {
+  display: none;
+}
+
+@keyframes ghost-pulse {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
