@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { getCurrentPosition } from '../geo/location'
+import type { GpsFix } from '../geo/location'
 import { downloadConfig, downloadProvisioningSheet, readConfigFile } from '../game/configIO'
 import { beaconKey, useGameStore } from '../game/store'
 import type { TagConfig } from '../game/types'
@@ -39,6 +41,9 @@ const blankForm = (): TagForm => ({
 const form = reactive<TagForm>(blankForm())
 const editingId = ref<string | null>(null)
 const showForm = ref(false)
+const gpsLoading = ref(false)
+const gpsError = ref<string | null>(null)
+const gpsAccuracyM = ref<number | null>(null)
 
 function nextMajor(): number {
   const uuids = new Set(store.tags.map((t) => t.uuid))
@@ -49,6 +54,7 @@ function nextMajor(): number {
 function startNewTag(lat: number, lng: number): void {
   Object.assign(form, blankForm(), { lat, lng })
   editingId.value = null
+  gpsAccuracyM.value = null
   showForm.value = true
 }
 
@@ -65,13 +71,46 @@ function editTag(tag: TagConfig): void {
     measuredPowerDbm: tag.measuredPowerDbm ?? null,
   })
   editingId.value = tag.id
+  gpsAccuracyM.value = null
   showForm.value = true
 }
 
 function cancelForm(): void {
   editingId.value = null
   showForm.value = false
+  gpsAccuracyM.value = null
   Object.assign(form, blankForm())
+}
+
+async function fetchGps(): Promise<GpsFix | null> {
+  gpsLoading.value = true
+  gpsError.value = null
+  try {
+    const fix = await getCurrentPosition()
+    gpsAccuracyM.value = fix.accuracyM
+    mapService?.flyTo(fix.lat, fix.lng)
+    return fix
+  } catch (err) {
+    gpsAccuracyM.value = null
+    gpsError.value = err instanceof Error ? err.message : 'Could not get your location.'
+    return null
+  } finally {
+    gpsLoading.value = false
+  }
+}
+
+async function newTagAtMyLocation(): Promise<void> {
+  const fix = await fetchGps()
+  if (!fix) return
+  startNewTag(fix.lat, fix.lng)
+  gpsAccuracyM.value = fix.accuracyM
+}
+
+async function useMyLocation(): Promise<void> {
+  const fix = await fetchGps()
+  if (!fix) return
+  form.lat = fix.lat
+  form.lng = fix.lng
 }
 
 function slugify(name: string): string {
@@ -148,6 +187,9 @@ onUnmounted(() => {
     <header class="admin__bar">
       <h2 class="admin__title">Tag setup</h2>
       <div class="admin__actions">
+        <button class="btn" :disabled="gpsLoading" @click="newTagAtMyLocation">
+          {{ gpsLoading ? 'Locating…' : 'New tag at my location' }}
+        </button>
         <button class="btn" @click="downloadProvisioningSheet(store.tags)">Provisioning CSV</button>
         <button class="btn" @click="downloadConfig(store.tags)">Export JSON</button>
         <button class="btn" @click="fileInput?.click()">Import JSON</button>
@@ -163,7 +205,8 @@ onUnmounted(() => {
     </header>
 
     <p v-if="importError" class="admin__error">{{ importError }}</p>
-    <p class="admin__hint">Click the map to place a tag.</p>
+    <p v-if="gpsError" class="admin__error">{{ gpsError }}</p>
+    <p class="admin__hint">Click the map to place a tag, or use your GPS position.</p>
 
     <div class="admin__body">
       <div ref="mapEl" class="admin__map" />
@@ -185,6 +228,17 @@ onUnmounted(() => {
             <label>Lat <input v-model.number="form.lat" type="number" step="any" required /></label>
             <label>Lng <input v-model.number="form.lng" type="number" step="any" required /></label>
           </div>
+          <button
+            type="button"
+            class="btn tag-form__gps"
+            :disabled="gpsLoading"
+            @click="useMyLocation"
+          >
+            {{ gpsLoading ? 'Locating…' : 'Use my location' }}
+          </button>
+          <p v-if="gpsAccuracyM !== null" class="tag-form__acc">
+            GPS accuracy ±{{ Math.round(gpsAccuracyM) }} m
+          </p>
           <div class="tag-form__row">
             <label
               >Find radius (m)
@@ -351,6 +405,16 @@ onUnmounted(() => {
   display: flex;
   gap: 8px;
   margin-top: 4px;
+}
+
+.tag-form__gps {
+  align-self: flex-start;
+}
+
+.tag-form__acc {
+  margin: -4px 0 0;
+  font-size: 12px;
+  color: #64748b;
 }
 
 .btn {

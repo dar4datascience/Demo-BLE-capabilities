@@ -107,6 +107,11 @@ export class GameMapService {
     this.markers.clear()
   }
 
+  /** Smoothly pan/zoom to a point (e.g. after a GPS fix). */
+  flyTo(lat: number, lng: number, zoom = 18): void {
+    this.map.flyTo([lat, lng], zoom, { duration: 0.8 })
+  }
+
   invalidateSize(): void {
     this.map.invalidateSize()
   }
