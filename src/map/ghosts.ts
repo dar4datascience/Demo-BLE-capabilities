@@ -11,11 +11,20 @@ import type { MapMarkerSpec } from './mapService'
 
 const ICON_SIZE = 44
 
+/** Escape user-controlled text before interpolating into divIcon HTML. */
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
 function ghostIcon(color: string, found: boolean, label: string): L.DivIcon {
   const state = found ? 'found' : color
   const inner = found
-    ? `<span class="ghost__dist ghost__dist--found">✓ ${label}</span>`
-    : `<span class="ghost__dist">${label}</span>`
+    ? `<span class="ghost__dist ghost__dist--found">✓ ${escapeHtml(label)}</span>`
+    : `<span class="ghost__dist">${escapeHtml(label)}</span>`
   return L.divIcon({
     className: `ghost ghost--${state}`,
     html: `<span class="ghost__ring"></span><span class="ghost__dot"></span>${inner}`,
