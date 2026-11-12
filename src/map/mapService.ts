@@ -34,11 +34,21 @@ export class GameMapService {
       zoomControl: true,
       attributionControl: true,
     })
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 20,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    }).addTo(this.map)
+    // Esri Dark Gray Canvas — free raster tiles, no API key. Two layers:
+    // base terrain + reference overlay (labels/roads). Note Esri's
+    // {z}/{y}/{x} order — row before column.
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+      {
+        maxZoom: 16,
+        attribution:
+          'Tiles &copy; Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      },
+    ).addTo(this.map)
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 16 },
+    ).addTo(this.map)
     this.markerLayer.addTo(this.map)
     this.map.on('click', (e: L.LeafletMouseEvent) => {
       for (const h of this.clickHandlers) h(e.latlng.lat, e.latlng.lng)
