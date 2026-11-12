@@ -187,7 +187,7 @@ onUnmounted(() => {
     <header class="admin__bar">
       <h2 class="admin__title">Tag setup</h2>
       <div class="admin__actions">
-        <button class="btn" :disabled="gpsLoading" @click="newTagAtMyLocation">
+        <button class="btn btn--accent" :disabled="gpsLoading" @click="newTagAtMyLocation">
           {{ gpsLoading ? 'Locating…' : 'New tag at my location' }}
         </button>
         <button class="btn" @click="downloadProvisioningSheet(store.tags)">Provisioning CSV</button>
@@ -230,7 +230,7 @@ onUnmounted(() => {
           </div>
           <button
             type="button"
-            class="btn tag-form__gps"
+            class="btn btn--accent tag-form__gps"
             :disabled="gpsLoading"
             @click="useMyLocation"
           >
@@ -309,13 +309,15 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 4px 14px 10px;
   flex-wrap: wrap;
 }
 
 .admin__title {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .admin__actions {
@@ -326,17 +328,18 @@ onUnmounted(() => {
 
 .admin__hint {
   margin: 0 14px 8px;
-  color: #64748b;
-  font-size: 13px;
+  color: var(--text-dim);
+  font-size: 12.5px;
 }
 
 .admin__error {
   margin: 0 14px 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: #fef2f2;
-  color: #b91c1c;
-  font-size: 14px;
+  padding: 9px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+  font-size: 13px;
 }
 
 .admin__body {
@@ -350,8 +353,10 @@ onUnmounted(() => {
 .admin__map {
   flex: 1;
   min-width: 0;
-  border-radius: 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .admin__side {
@@ -366,30 +371,53 @@ onUnmounted(() => {
 .tag-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(127, 127, 127, 0.08);
+  gap: 9px;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .tag-form h3 {
-  margin: 0 0 4px;
-  font-size: 15px;
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .tag-form label {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  font-size: 12px;
-  color: #475569;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
 }
 
 .tag-form input {
-  padding: 7px 9px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text);
   font-size: 14px;
+  font-family: var(--font);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.tag-form input:focus {
+  outline: none;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.tag-form input::-webkit-outer-spin-button,
+.tag-form input::-webkit-inner-spin-button {
+  opacity: 0.4;
 }
 
 .tag-form__row {
@@ -412,33 +440,79 @@ onUnmounted(() => {
 }
 
 .tag-form__acc {
-  margin: -4px 0 0;
+  margin: -2px 0 0;
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-dim);
 }
 
 .btn {
-  padding: 7px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background: #fff;
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
   font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
   cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.btn:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--accent {
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+  color: var(--accent-strong);
+}
+
+.btn--accent:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: var(--accent-strong);
 }
 
 .btn--primary {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: #fff;
+  background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+  border-color: transparent;
+  color: #032b1e;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn--primary:hover {
+  background: linear-gradient(135deg, #6ee7b7, #10b981);
 }
 
 .btn--danger {
-  color: #b91c1c;
+  color: var(--danger);
+}
+
+.btn--danger:hover {
+  background: rgba(248, 113, 113, 0.12);
+  border-color: rgba(248, 113, 113, 0.35);
 }
 
 .admin__section {
-  margin: 8px 0 0;
-  font-size: 14px;
+  margin: 6px 2px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
 }
 
 .tag-list {
@@ -447,14 +521,23 @@ onUnmounted(() => {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .tag-item {
   display: flex;
   align-items: center;
-  border-radius: 10px;
-  background: rgba(127, 127, 127, 0.08);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.tag-item:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
 }
 
 .tag-item__main {
@@ -463,30 +546,41 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-  padding: 8px 10px;
+  padding: 9px 11px;
   border: none;
   background: none;
   text-align: left;
   cursor: pointer;
   font-size: 14px;
+  color: var(--text);
+  font-family: var(--font);
 }
 
 .tag-item__meta {
-  font-size: 12px;
-  color: #64748b;
+  font-size: 11.5px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
 }
 
 .tag-item__del {
-  padding: 8px 12px;
+  padding: 9px 13px;
   border: none;
+  border-radius: 0 var(--radius) var(--radius) 0;
   background: none;
-  color: #dc2626;
+  color: var(--danger);
+  font-size: 14px;
   cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.tag-item__del:hover {
+  background: rgba(248, 113, 113, 0.12);
 }
 
 .tag-item--empty {
   justify-content: center;
-  color: #64748b;
-  padding: 10px;
+  color: var(--text-dim);
+  padding: 12px;
+  border-style: dashed;
 }
 </style>

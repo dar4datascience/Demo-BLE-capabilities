@@ -1,5 +1,23 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
+
+  /* Design tokens — dark "night hunt" theme, emerald accent */
+  --bg: #0a0e13;
+  --bg-elev: #10161d;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #e8eef4;
+  --text-dim: #93a1af;
+  --accent: #10b981;
+  --accent-strong: #34d399;
+  --accent-dim: rgba(16, 185, 129, 0.14);
+  --accent-border: rgba(52, 211, 153, 0.4);
+  --danger: #f87171;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 * {
@@ -14,10 +32,71 @@ body,
 }
 
 body {
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.35);
+}
+
+/* Slim dark scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+/* --- Leaflet chrome on dark --- */
+
+.leaflet-container {
+  background: #0d1420;
+  font-family: var(--font);
+}
+
+.leaflet-bar {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.leaflet-bar a {
+  background: var(--bg-elev) !important;
+  color: var(--text) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.leaflet-bar a:hover {
+  background: var(--surface-2) !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(10, 14, 19, 0.72) !important;
+  color: var(--text-dim) !important;
+  font-size: 10px !important;
+  padding: 2px 8px !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--text-dim) !important;
+}
+
+.leaflet-tooltip {
+  background: var(--bg-elev) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 8px !important;
+  color: var(--text) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
+  font-family: var(--font) !important;
+  font-size: 12px !important;
+  padding: 4px 10px !important;
+}
+
+.leaflet-tooltip-top:before {
+  border-top-color: var(--border-strong) !important;
 }
 
 /* --- Ghost markers (Leaflet divIcon; must be global, not scoped) --- */
@@ -38,8 +117,10 @@ body {
   height: 14px;
   margin: -7px 0 0 -7px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 0 10px 2px var(--glow, rgba(255, 255, 255, 0.4)),
+    0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .ghost__ring {
@@ -51,48 +132,55 @@ body {
 }
 
 .ghost__dist,
-.ghost__check {
+.ghost__dist--found {
   position: absolute;
   top: 30px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 1px 6px;
-  border-radius: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
-  line-height: 1.4;
-  color: #fff;
-  background: rgba(17, 24, 39, 0.85);
+  line-height: 1.5;
+  color: var(--text);
+  background: rgba(10, 14, 19, 0.85);
+  border: 1px solid var(--border);
   white-space: nowrap;
+  backdrop-filter: blur(4px);
 }
 
-.ghost__check {
-  color: #4ade80;
+.ghost__dist--found {
+  color: var(--accent-strong);
+  border-color: var(--accent-border);
 }
 
 .ghost--green {
-  color: #22c55e;
+  color: #34d399;
+  --glow: rgba(52, 211, 153, 0.55);
 }
 .ghost--green .ghost__dot {
-  background: #22c55e;
+  background: #34d399;
 }
 
 .ghost--yellow {
-  color: #eab308;
+  color: #fbbf24;
+  --glow: rgba(251, 191, 36, 0.55);
 }
 .ghost--yellow .ghost__dot {
-  background: #eab308;
+  background: #fbbf24;
 }
 
 .ghost--red {
-  color: #ef4444;
+  color: #f87171;
+  --glow: rgba(248, 113, 113, 0.55);
 }
 .ghost--red .ghost__dot {
-  background: #ef4444;
+  background: #f87171;
 }
 
 .ghost--unknown {
   color: #9ca3af;
+  --glow: rgba(156, 163, 175, 0.4);
 }
 .ghost--unknown .ghost__dot {
   background: #9ca3af;
@@ -101,6 +189,7 @@ body {
 /* Found tags: calm solid style, no pulse */
 .ghost--found {
   color: #38bdf8;
+  --glow: rgba(56, 189, 248, 0.5);
 }
 .ghost--found .ghost__dot {
   background: #38bdf8;
@@ -136,11 +225,13 @@ body {
   height: 14px;
   margin: 2px;
   border-radius: 50%;
-  background: #7c3aed;
-  border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  background: #fbbf24;
+  border: 2px solid #0a0e13;
+  box-shadow:
+    0 0 8px rgba(251, 191, 36, 0.6),
+    0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .admin-tag:hover .admin-tag__dot {
-  background: #a78bfa;
+  background: #fde68a;
 }
