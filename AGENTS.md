@@ -46,6 +46,8 @@ npm run lint         # eslint .
 npm run lint:fix     # eslint --fix
 npm run format       # prettier --write .
 npm test             # vitest run (unit tests)
+npm run test:e2e     # playwright e2e + visual regression (needs dev server or auto-starts one)
+npm run test:e2e:update  # regenerate screenshot baselines after intentional UI changes
 npm run build        # typecheck + vite build → dist/
 npm run cap:sync     # build + copy web assets into android project
 cd android && ./gradlew assembleDebug
@@ -98,6 +100,10 @@ The admin view's **provisioning sheet export** produces the Major→name list to
 ## Testing
 
 - Unit: `npm test` — cover all pure modules (parser, distance, game logic) plus store actions.
+- E2E/visual: `npm run test:e2e` — Playwright + real Chromium against the Vite dev server (auto-started on :5199). Covers UI smoke, basemap tile sanity (HTTP checks + tile-hash diversity + a map-area screenshot baseline at a fixed view), and UI screenshot baselines with the map masked.
+  - Tile URLs come from `src/map/tiles.ts` (`MAP_TILE_LAYERS`) — the single source of truth shared by app and tests.
+  - Baselines live in `e2e/__screenshots__/` and are committed. External map tiles can drift — rerun `test:e2e:update` after intentional tile/UI changes.
+  - `window.__tagtrailMap` exposes the Leaflet map for tests to frame deterministic views.
 - Manual device checklist (see issue #17): build APK → install → provision a real tag → confirm ghost appears/colors/found.
 
 ## Definition of done

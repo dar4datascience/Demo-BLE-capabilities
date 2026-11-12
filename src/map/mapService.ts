@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { MAP_TILE_LAYERS } from './tiles'
 
 export interface MapMarkerSpec {
   key: string
@@ -34,26 +35,16 @@ export class GameMapService {
       zoomControl: true,
       attributionControl: true,
     })
-    // Esri Dark Gray Canvas — free raster tiles, no API key. Two layers:
-    // base terrain + reference overlay (labels/roads). Note Esri's
-    // {z}/{y}/{x} order — row before column.
-    L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-      {
-        maxZoom: 16,
-        attribution:
-          'Tiles &copy; Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-      },
-    ).addTo(this.map)
-    L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 16 },
-    ).addTo(this.map)
+    for (const layer of MAP_TILE_LAYERS) {
+      L.tileLayer(layer.url, { ...layer.options }).addTo(this.map)
+    }
     this.markerLayer.addTo(this.map)
     this.map.on('click', (e: L.LeafletMouseEvent) => {
       for (const h of this.clickHandlers) h(e.latlng.lat, e.latlng.lng)
     })
     this.map.setView(DEFAULT_CENTER, DEFAULT_ZOOM)
+    // Debug/test handle so e2e tests can frame a deterministic view.
+    ;(window as unknown as { __tagtrailMap?: L.Map }).__tagtrailMap = this.map
   }
 
   /** Frame the given points; falls back to a medium world view when empty. */

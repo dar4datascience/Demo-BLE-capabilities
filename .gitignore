@@ -22,3 +22,9 @@ dist-ssr/
 *.log
 npm-debug.log*
 .playwright-mcp/
+
+# Playwright e2e
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

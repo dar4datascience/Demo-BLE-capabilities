@@ -19,6 +19,14 @@ cd android && ./gradlew assembleDebug
 
 Copy the APK to an Android phone and install (allow "install unknown apps" when prompted). See [AGENTS.md](AGENTS.md) for the full toolchain setup, architecture rules, and contribution conventions.
 
+## Testing
+
+```bash
+npm test             # unit tests (Vitest)
+npm run test:e2e     # browser e2e + visual regression (Playwright)
+npm run test:e2e:update  # regenerate screenshot baselines
+```
+
 ## How it works
 
 - **Admin view**: drop tags on a map, name them, set find-radius — exports a provisioning sheet for programming each beacon via the Feasycom FeasyBeacon app.

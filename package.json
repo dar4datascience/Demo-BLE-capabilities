@@ -14,6 +14,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots",
     "cap:sync": "npm run build && cap sync android",
     "cap:open": "cap open android",
     "prepare": "husky"
@@ -39,6 +41,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
     "@types/leaflet": "^1.9.22",
     "@vitejs/plugin-vue": "^6.0.10",
     "eslint": "^10.14.0",
@@ -48,6 +51,7 @@
     "happy-dom": "^21.0.4",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
+    "pngjs": "^7.0.0",
     "prettier": "^3.10.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.72.2",
